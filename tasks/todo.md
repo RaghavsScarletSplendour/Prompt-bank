@@ -14,6 +14,7 @@
 - [x] Create PromptGallery component
 - [x] Create PromptForm component
 - [x] Build home page with all components
+- [x] Add clickable prompt cards with detail modal
 
 ## Review
 
@@ -73,3 +74,23 @@ CREATE INDEX idx_prompts_user_id ON prompts(user_id);
 ```bash
 npm run dev
 ```
+
+---
+
+## Clickable Prompt Cards Feature (Latest)
+
+### Summary
+Added clickable prompt cards that open a centered modal showing full prompt content and metadata.
+
+### Changes Made
+1. **Created `components/Modal.tsx`** - Reusable modal base component (DRY principle)
+2. **Created `components/PromptDetailModal.tsx`** - Displays full prompt with name, tags, content, and created date
+3. **Refactored `components/PromptForm.tsx`** - Now uses Modal base component
+4. **Updated `components/PromptCard.tsx`** - Cards are now clickable, open detail modal
+
+### Features
+- Click any prompt card to view full content
+- Scrollable modal for long prompts
+- Shows: name, tags, full content, created date
+- Click outside or X button to close
+- Menu button (delete) still works independently
