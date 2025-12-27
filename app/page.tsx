@@ -55,7 +55,7 @@ export default function Home() {
         {loading ? (
           <div className="text-center py-12 text-gray-500">Loading...</div>
         ) : (
-          <PromptGallery prompts={prompts} />
+          <PromptGallery prompts={prompts} onRefresh={fetchPrompts} />
         )}
       </main>
 
