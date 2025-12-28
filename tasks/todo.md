@@ -94,3 +94,84 @@ Added clickable prompt cards that open a centered modal showing full prompt cont
 - Shows: name, tags, full content, created date
 - Click outside or X button to close
 - Menu button (delete) still works independently
+
+---
+
+---
+
+## Edit Prompts Feature
+
+### Plan
+- [x] Add PUT endpoint to `app/api/prompts/route.ts` (reuse existing validation)
+- [x] Add edit mode to `PromptDetailModal.tsx` (same modal, editable fields)
+- [x] Add `onEdit` callback to `PromptCard.tsx` for refresh after save
+- [x] Test the full edit flow
+
+### Approach
+- **DRY**: Edit inside existing PromptDetailModal (toggle view/edit mode)
+- **Minimal changes**: Only 3 files modified
+- **Backend sync**: PUT endpoint validates and updates in Supabase
+
+### Review
+
+**Files Modified:**
+- `app/api/prompts/route.ts` - Added PUT endpoint (reuses existing validation)
+- `components/PromptDetailModal.tsx` - Added edit mode with toggle, editable inputs, save/cancel buttons
+- `components/PromptCard.tsx` - Added optional `onEdit` prop, passed to modal as `onSave`
+- `components/PromptGallery.tsx` - Passes `onRefresh` to cards as `onEdit`
+
+**How It Works:**
+1. Click a prompt card → opens detail modal (view mode)
+2. Click "Edit" button → fields become editable inputs
+3. Edit name, tags, content → click "Save"
+4. PUT request validates and updates Supabase
+5. Gallery refreshes to show updated prompt
+
+**Features:**
+- Same modal for view and edit (consistent UX)
+- Cancel button reverts changes
+- Validation with error messages
+- Loading state while saving
+
+---
+
+## Security Review (Dec 28, 2025)
+
+### Status: SECURE
+
+Performed a comprehensive security review. No critical vulnerabilities found.
+
+### Security Checklist - All Passing
+
+**Secrets & Sensitive Data**
+- [x] `.env.local` properly ignored in `.gitignore`
+- [x] No env files tracked in git
+- [x] Service role key only used server-side
+- [x] No hardcoded secrets in code
+
+**Authentication & Authorization**
+- [x] All routes protected by Clerk middleware
+- [x] API endpoints verify `userId` before processing
+- [x] Database queries filter by `user_id`
+
+**Input Validation**
+- [x] Server-side validation with sanitization
+- [x] Control characters stripped from input
+- [x] Max length limits enforced
+- [x] UUID format validation on delete
+
+**XSS Protection**
+- [x] No `dangerouslySetInnerHTML`
+- [x] No `innerHTML` or `eval()`
+- [x] React auto-escapes output
+
+**Security Headers (next.config.ts)**
+- [x] X-Frame-Options: DENY
+- [x] X-Content-Type-Options: nosniff
+- [x] X-XSS-Protection enabled
+- [x] Permissions-Policy configured
+
+### Optional Recommendations
+1. Add HSTS header for HTTPS enforcement
+2. Consider Content Security Policy (requires testing)
+3. Consider API rate limiting for abuse prevention

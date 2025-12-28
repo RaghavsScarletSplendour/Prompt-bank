@@ -14,9 +14,10 @@ interface Prompt {
 interface PromptCardProps {
   prompt: Prompt;
   onDelete: (id: string) => void;
+  onEdit?: () => void;
 }
 
-export default function PromptCard({ prompt, onDelete }: PromptCardProps) {
+export default function PromptCard({ prompt, onDelete, onEdit }: PromptCardProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [detailOpen, setDetailOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -85,6 +86,7 @@ export default function PromptCard({ prompt, onDelete }: PromptCardProps) {
         isOpen={detailOpen}
         onClose={() => setDetailOpen(false)}
         prompt={prompt}
+        onSave={onEdit}
       />
     </>
   );

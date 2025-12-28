@@ -63,7 +63,7 @@ export default function PromptGallery({ prompts, onRefresh }: PromptGalleryProps
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {prompts.map((prompt) => (
-          <PromptCard key={prompt.id} prompt={prompt} onDelete={handleDeleteClick} />
+          <PromptCard key={prompt.id} prompt={prompt} onDelete={handleDeleteClick} onEdit={onRefresh} />
         ))}
       </div>
       <ConfirmDialog
