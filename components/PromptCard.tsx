@@ -51,7 +51,7 @@ export default function PromptCard({ prompt, onDelete, onEdit, showSimilarity }:
             <h3 className="font-semibold text-lg text-gray-900">{prompt.name}</h3>
             {showSimilarity && prompt.similarity !== undefined && (
               <span className="bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded">
-                {Math.round(prompt.similarity * 100)}% match
+                {Math.min(99, Math.round(prompt.similarity * 125))}% match
               </span>
             )}
           </div>

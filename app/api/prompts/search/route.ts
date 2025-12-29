@@ -24,7 +24,7 @@ export async function POST(req: Request) {
       query_embedding: queryEmbedding,
       match_user_id: userId,
       match_count: limit,
-      match_threshold: 0.3,
+      match_threshold: 0.4,
     });
 
     if (error) {
