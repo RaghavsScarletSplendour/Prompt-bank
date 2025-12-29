@@ -18,6 +18,7 @@ export default function SearchPage() {
   const [loading, setLoading] = useState(false);
   const [searchMode, setSearchMode] = useState<"text" | "semantic">("text");
   const [searchResults, setSearchResults] = useState<Prompt[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   // Text search: filter locally
   const filteredPrompts = prompts.filter((p) =>
@@ -39,9 +40,11 @@ export default function SearchPage() {
   const semanticSearch = useCallback(async (query: string) => {
     if (!query.trim()) {
       setSearchResults([]);
+      setError(null);
       return;
     }
     setLoading(true);
+    setError(null);
     try {
       const res = await fetch("/api/prompts/search", {
         method: "POST",
@@ -49,7 +52,18 @@ export default function SearchPage() {
         body: JSON.stringify({ query }),
       });
       const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || "Semantic search failed. Please try again.");
+        setSearchResults([]);
+        return;
+      }
+
       setSearchResults(data.prompts || []);
+    } catch (err) {
+      console.error("Semantic search error:", err);
+      setError("Failed to connect to search service. Check your API key and try again.");
+      setSearchResults([]);
     } finally {
       setLoading(false);
     }
@@ -82,7 +96,10 @@ export default function SearchPage() {
       {/* Search Mode Toggle */}
       <div className="flex gap-2 mb-4">
         <button
-          onClick={() => setSearchMode("text")}
+          onClick={() => {
+            setSearchMode("text");
+            setError(null);
+          }}
           className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
             searchMode === "text"
               ? "bg-blue-600 text-white"
@@ -92,7 +109,10 @@ export default function SearchPage() {
           Text Search
         </button>
         <button
-          onClick={() => setSearchMode("semantic")}
+          onClick={() => {
+            setSearchMode("semantic");
+            setError(null);
+          }}
           className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
             searchMode === "semantic"
               ? "bg-blue-600 text-white"
@@ -114,6 +134,29 @@ export default function SearchPage() {
         onChange={(e) => setSearchQuery(e.target.value)}
         className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-md text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-6"
       />
+
+      {/* Error Message */}
+      {error && (
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-md">
+          <div className="flex items-start gap-3">
+            <svg className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <div>
+              <p className="text-sm text-red-800 font-medium">Semantic search error</p>
+              <p className="text-sm text-red-600 mt-1">{error}</p>
+            </div>
+            <button
+              onClick={() => setError(null)}
+              className="ml-auto text-red-500 hover:text-red-700"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
 
       {loading ? (
         <div className="text-center py-12 text-gray-500">
