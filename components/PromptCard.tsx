@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import PromptDetailModal from "./PromptDetailModal";
+import { Category } from "@/lib/types";
 
 interface Prompt {
   id: string;
@@ -9,6 +10,7 @@ interface Prompt {
   tags: string | null;
   content: string;
   created_at: string;
+  category_id: string | null;
   similarity?: number;
 }
 
@@ -17,9 +19,11 @@ interface PromptCardProps {
   onDelete: (id: string) => void;
   onEdit?: () => void;
   showSimilarity?: boolean;
+  categories: Category[];
+  categoryName?: string;
 }
 
-export default function PromptCard({ prompt, onDelete, onEdit, showSimilarity }: PromptCardProps) {
+export default function PromptCard({ prompt, onDelete, onEdit, showSimilarity, categories, categoryName }: PromptCardProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [detailOpen, setDetailOpen] = useState(false);
   const [startInEditMode, setStartInEditMode] = useState(false);
@@ -116,8 +120,13 @@ export default function PromptCard({ prompt, onDelete, onEdit, showSimilarity }:
             </div>
           </div>
         </div>
-        {tags.length > 0 && (
+        {(categoryName || tags.length > 0) && (
           <div className="flex flex-wrap gap-1 mb-3">
+            {categoryName && (
+              <span className="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">
+                {categoryName}
+              </span>
+            )}
             {tags.map((tag, index) => (
               <span
                 key={index}
@@ -139,6 +148,7 @@ export default function PromptCard({ prompt, onDelete, onEdit, showSimilarity }:
         onSave={onEdit}
         onDelete={() => onDelete(prompt.id)}
         initialEditMode={startInEditMode}
+        categories={categories}
       />
     </>
   );

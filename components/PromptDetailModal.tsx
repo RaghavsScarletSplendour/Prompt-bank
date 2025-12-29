@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { PROMPT_LIMITS, validatePromptInput } from "@/lib/validations";
 import Modal from "./Modal";
+import { Category } from "@/lib/types";
 
 interface Prompt {
   id: string;
@@ -10,6 +11,7 @@ interface Prompt {
   tags: string | null;
   content: string;
   created_at: string;
+  category_id: string | null;
 }
 
 interface PromptDetailModalProps {
@@ -19,15 +21,17 @@ interface PromptDetailModalProps {
   onSave?: () => void;
   onDelete?: () => void;
   initialEditMode?: boolean;
+  categories: Category[];
 }
 
-export default function PromptDetailModal({ isOpen, onClose, prompt, onSave, onDelete, initialEditMode = false }: PromptDetailModalProps) {
+export default function PromptDetailModal({ isOpen, onClose, prompt, onSave, onDelete, initialEditMode = false, categories }: PromptDetailModalProps) {
   const [isEditing, setIsEditing] = useState(initialEditMode);
   const [menuOpen, setMenuOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [name, setName] = useState(prompt.name);
   const [tagsInput, setTagsInput] = useState(prompt.tags || "");
   const [content, setContent] = useState(prompt.content);
+  const [categoryId, setCategoryId] = useState(prompt.category_id || "");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const menuRef = useRef<HTMLDivElement>(null);
@@ -37,6 +41,7 @@ export default function PromptDetailModal({ isOpen, onClose, prompt, onSave, onD
     setName(prompt.name);
     setTagsInput(prompt.tags || "");
     setContent(prompt.content);
+    setCategoryId(prompt.category_id || "");
     setIsEditing(initialEditMode);
     setError("");
     setMenuOpen(false);
@@ -54,6 +59,7 @@ export default function PromptDetailModal({ isOpen, onClose, prompt, onSave, onD
   }, []);
 
   const tags = prompt.tags ? prompt.tags.split(",").map((t) => t.trim()) : [];
+  const categoryName = categories.find((c) => c.id === prompt.category_id)?.name;
   const createdDate = new Date(prompt.created_at).toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
@@ -66,6 +72,7 @@ export default function PromptDetailModal({ isOpen, onClose, prompt, onSave, onD
     setName(prompt.name);
     setTagsInput(prompt.tags || "");
     setContent(prompt.content);
+    setCategoryId(prompt.category_id || "");
     setIsEditing(false);
     setError("");
   };
@@ -96,6 +103,7 @@ export default function PromptDetailModal({ isOpen, onClose, prompt, onSave, onD
           name: name.trim(),
           tags: tagsInput.trim(),
           content: content.trim(),
+          category_id: categoryId || null,
         }),
       });
 
@@ -201,32 +209,54 @@ export default function PromptDetailModal({ isOpen, onClose, prompt, onSave, onD
         </div>
 
         {isEditing ? (
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Tags (comma-separated)
-            </label>
-            <input
-              type="text"
-              value={tagsInput}
-              onChange={(e) => setTagsInput(e.target.value)}
-              className="w-full border border-gray-300 rounded px-3 py-2 text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="coding, writing, creative"
-              maxLength={PROMPT_LIMITS.tags.maxLength}
-            />
-          </div>
-        ) : (
-          tags.length > 0 && (
-            <div className="flex flex-wrap gap-1 mb-4">
-              {tags.map((tag, index) => (
-                <span
-                  key={index}
-                  className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded"
-                >
-                  {tag}
-                </span>
-              ))}
+          <>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Category
+              </label>
+              <select
+                value={categoryId}
+                onChange={(e) => setCategoryId(e.target.value)}
+                className="w-full border border-gray-300 rounded px-3 py-2 text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">No Category</option>
+                {categories.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
             </div>
-          )
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Tags (comma-separated)
+              </label>
+              <input
+                type="text"
+                value={tagsInput}
+                onChange={(e) => setTagsInput(e.target.value)}
+                className="w-full border border-gray-300 rounded px-3 py-2 text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="coding, writing, creative"
+                maxLength={PROMPT_LIMITS.tags.maxLength}
+              />
+            </div>
+          </>
+        ) : (
+          <div className="flex flex-wrap gap-1 mb-4">
+            {categoryName && (
+              <span className="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">
+                {categoryName}
+              </span>
+            )}
+            {tags.map((tag, index) => (
+              <span
+                key={index}
+                className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
         )}
 
         <div className="mb-4">

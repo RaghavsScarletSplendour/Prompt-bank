@@ -40,6 +40,7 @@ export async function POST(req: Request) {
     }
 
     const { name, content, tags } = validation.data;
+    const category_id = body.category_id || null;
 
     // Generate use cases for intent-based search (graceful degradation if it fails)
     let useCases: string | null = null;
@@ -60,7 +61,7 @@ export async function POST(req: Request) {
 
     const { data, error } = await supabase
       .from("prompts")
-      .insert({ user_id: userId, name, tags, content, embedding, use_cases: useCases })
+      .insert({ user_id: userId, name, tags, content, embedding, use_cases: useCases, category_id })
       .select()
       .single();
 
@@ -99,6 +100,7 @@ export async function PUT(req: Request) {
     }
 
     const { name, content, tags } = validation.data;
+    const category_id = body.category_id !== undefined ? body.category_id : undefined;
 
     // Regenerate use cases for intent-based search (graceful degradation if it fails)
     let useCases: string | null = null;
@@ -117,9 +119,14 @@ export async function PUT(req: Request) {
       console.error("Failed to generate embedding:", error);
     }
 
+    const updateData: Record<string, unknown> = { name, tags, content, embedding, use_cases: useCases };
+    if (category_id !== undefined) {
+      updateData.category_id = category_id;
+    }
+
     const { data, error } = await supabase
       .from("prompts")
-      .update({ name, tags, content, embedding, use_cases: useCases })
+      .update(updateData)
       .eq("id", id)
       .eq("user_id", userId)
       .select()

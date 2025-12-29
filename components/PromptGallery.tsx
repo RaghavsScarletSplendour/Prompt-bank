@@ -3,6 +3,7 @@
 import { useState } from "react";
 import PromptCard from "./PromptCard";
 import ConfirmDialog from "./ConfirmDialog";
+import { Category } from "@/lib/types";
 
 interface Prompt {
   id: string;
@@ -10,6 +11,7 @@ interface Prompt {
   tags: string | null;
   content: string;
   created_at: string;
+  category_id: string | null;
   similarity?: number;
 }
 
@@ -17,9 +19,10 @@ interface PromptGalleryProps {
   prompts: Prompt[];
   onRefresh: () => void;
   showSimilarity?: boolean;
+  categories: Category[];
 }
 
-export default function PromptGallery({ prompts, onRefresh, showSimilarity }: PromptGalleryProps) {
+export default function PromptGallery({ prompts, onRefresh, showSimilarity, categories }: PromptGalleryProps) {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
 
@@ -65,7 +68,15 @@ export default function PromptGallery({ prompts, onRefresh, showSimilarity }: Pr
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {prompts.map((prompt) => (
-          <PromptCard key={prompt.id} prompt={prompt} onDelete={handleDeleteClick} onEdit={onRefresh} showSimilarity={showSimilarity} />
+          <PromptCard
+            key={prompt.id}
+            prompt={prompt}
+            onDelete={handleDeleteClick}
+            onEdit={onRefresh}
+            showSimilarity={showSimilarity}
+            categories={categories}
+            categoryName={categories.find((c) => c.id === prompt.category_id)?.name}
+          />
         ))}
       </div>
       <ConfirmDialog

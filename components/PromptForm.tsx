@@ -3,17 +3,20 @@
 import { useState } from "react";
 import { PROMPT_LIMITS, validatePromptInput } from "@/lib/validations";
 import Modal from "./Modal";
+import { Category } from "@/lib/types";
 
 interface PromptFormProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  categories: Category[];
 }
 
-export default function PromptForm({ isOpen, onClose, onSuccess }: PromptFormProps) {
+export default function PromptForm({ isOpen, onClose, onSuccess, categories }: PromptFormProps) {
   const [name, setName] = useState("");
   const [tags, setTags] = useState("");
   const [content, setContent] = useState("");
+  const [categoryId, setCategoryId] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -34,13 +37,19 @@ export default function PromptForm({ isOpen, onClose, onSuccess }: PromptFormPro
       const res = await fetch("/api/prompts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: name.trim(), tags: tags.trim(), content: content.trim() }),
+        body: JSON.stringify({
+          name: name.trim(),
+          tags: tags.trim(),
+          content: content.trim(),
+          category_id: categoryId || null,
+        }),
       });
 
       if (res.ok) {
         setName("");
         setTags("");
         setContent("");
+        setCategoryId("");
         setError("");
         onSuccess();
         onClose();
@@ -77,6 +86,23 @@ export default function PromptForm({ isOpen, onClose, onSuccess }: PromptFormPro
             placeholder="My awesome prompt"
             maxLength={PROMPT_LIMITS.name.maxLength}
           />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Category
+          </label>
+          <select
+            value={categoryId}
+            onChange={(e) => setCategoryId(e.target.value)}
+            className="w-full border border-gray-300 rounded-md px-3 py-2 text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">No Category</option>
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">

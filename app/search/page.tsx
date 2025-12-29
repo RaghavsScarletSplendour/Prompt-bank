@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import PromptGallery from "@/components/PromptGallery";
+import { Category } from "@/lib/types";
 
 interface Prompt {
   id: string;
@@ -9,11 +10,13 @@ interface Prompt {
   tags: string | null;
   content: string;
   created_at: string;
+  category_id: string | null;
   similarity?: number;
 }
 
 export default function SearchPage() {
   const [prompts, setPrompts] = useState<Prompt[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [searchMode, setSearchMode] = useState<"text" | "semantic">("text");
@@ -33,6 +36,16 @@ export default function SearchPage() {
       setPrompts(data.prompts || []);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchCategories = async () => {
+    try {
+      const res = await fetch("/api/categories");
+      const data = await res.json();
+      setCategories(data.categories || []);
+    } catch (error) {
+      console.error("Failed to fetch categories:", error);
     }
   };
 
@@ -82,6 +95,7 @@ export default function SearchPage() {
 
   useEffect(() => {
     fetchPrompts();
+    fetchCategories();
   }, []);
 
   const displayPrompts =
@@ -177,6 +191,7 @@ export default function SearchPage() {
           prompts={displayPrompts}
           onRefresh={fetchPrompts}
           showSimilarity={searchMode === "semantic"}
+          categories={categories}
         />
       )}
     </div>
