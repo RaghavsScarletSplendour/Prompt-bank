@@ -51,7 +51,8 @@ export default function PromptCard({ prompt, onDelete, onEdit, showSimilarity, c
   return (
     <>
       <div
-        className="bg-gray-800 border border-white/5 rounded-2xl p-4 shadow-md hover:shadow-lg transition-shadow relative cursor-pointer"
+        className="bg-gray-800 border border-white/5 rounded-2xl p-6 relative cursor-pointer"
+        style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.02), 0 8px 24px rgba(0,0,0,0.04)' }}
         onClick={() => {
           setStartInEditMode(false);
           setDetailOpen(true);
