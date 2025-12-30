@@ -73,13 +73,13 @@ export default function Sidebar() {
                 isCollapsed ? "p-1.5 w-fit" : "px-3"
               } ${
                 pathname === link.href
-                  ? "text-blue-500"
+                  ? "text-white"
                   : "text-gray-500 hover:text-gray-300"
               }`}
             >
               <span className="flex-shrink-0">{link.icon}</span>
               <span
-                className={`whitespace-nowrap overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+                className={`whitespace-nowrap overflow-hidden transition-[opacity,width] duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] ${
                   isCollapsed ? "opacity-0 w-0" : "opacity-100"
                 }`}
               >

@@ -115,7 +115,7 @@ export default function SearchPage() {
           }}
           className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
             searchMode === "text"
-              ? "bg-blue-600 text-white"
+              ? "bg-gray-700 text-white"
               : "bg-gray-800 text-gray-300 hover:bg-gray-700"
           }`}
         >
@@ -128,7 +128,7 @@ export default function SearchPage() {
           }}
           className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
             searchMode === "semantic"
-              ? "bg-blue-600 text-white"
+              ? "bg-gray-700 text-white"
               : "bg-gray-800 text-gray-300 hover:bg-gray-700"
           }`}
         >

@@ -66,9 +66,12 @@ export default function GalleryPage() {
           />
           <button
             onClick={() => setIsFormOpen(true)}
-            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+            className="flex items-center gap-2 bg-gray-800 text-gray-300 px-4 py-2 rounded-md hover:bg-gray-700 hover:text-white transition-colors"
           >
-            + Add Prompt
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            Add Prompt
           </button>
         </div>
       </div>
