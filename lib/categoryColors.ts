@@ -11,20 +11,20 @@ export interface CategoryColorScheme {
 }
 
 // Curated aesthetic color palette using Tailwind classes
-// Muted, professional colors that work well together
+// Transparent backgrounds with colored text for a refined look
 const CATEGORY_COLORS: CategoryColorScheme[] = [
-  { bg: 'bg-rose-100', text: 'text-rose-700' },
-  { bg: 'bg-orange-100', text: 'text-orange-700' },
-  { bg: 'bg-amber-100', text: 'text-amber-700' },
-  { bg: 'bg-emerald-100', text: 'text-emerald-700' },
-  { bg: 'bg-teal-100', text: 'text-teal-700' },
-  { bg: 'bg-cyan-100', text: 'text-cyan-700' },
-  { bg: 'bg-sky-100', text: 'text-sky-700' },
-  { bg: 'bg-indigo-100', text: 'text-indigo-700' },
-  { bg: 'bg-violet-100', text: 'text-violet-700' },
-  { bg: 'bg-fuchsia-100', text: 'text-fuchsia-700' },
-  { bg: 'bg-pink-100', text: 'text-pink-700' },
-  { bg: 'bg-slate-100', text: 'text-slate-700' },
+  { bg: 'bg-rose-500/10', text: 'text-rose-400' },
+  { bg: 'bg-orange-500/10', text: 'text-orange-400' },
+  { bg: 'bg-amber-500/10', text: 'text-amber-400' },
+  { bg: 'bg-emerald-500/10', text: 'text-emerald-400' },
+  { bg: 'bg-teal-500/10', text: 'text-teal-400' },
+  { bg: 'bg-cyan-500/10', text: 'text-cyan-400' },
+  { bg: 'bg-sky-500/10', text: 'text-sky-400' },
+  { bg: 'bg-indigo-500/10', text: 'text-indigo-400' },
+  { bg: 'bg-violet-500/10', text: 'text-violet-400' },
+  { bg: 'bg-fuchsia-500/10', text: 'text-fuchsia-400' },
+  { bg: 'bg-pink-500/10', text: 'text-pink-400' },
+  { bg: 'bg-slate-500/10', text: 'text-slate-400' },
 ];
 
 /**
