@@ -1,8 +1,9 @@
 import { auth } from "@clerk/nextjs/server";
-import { supabase } from "@/lib/supabase";
+import { getSupabaseClient } from "@/lib/supabase";
 import { NextResponse } from "next/server";
 import { generateEmbedding, getEmbeddingText } from "@/lib/embeddings";
 import { generateUseCases } from "@/lib/ai";
+import { ConfigError } from "@/lib/errors";
 
 /**
  * One-time endpoint to backfill use_cases for existing prompts.
@@ -15,10 +16,11 @@ export async function POST() {
   }
 
   try {
+    const supabase = getSupabaseClient();
     // Fetch all prompts without use_cases
     const { data: prompts, error: fetchError } = await supabase
       .from("prompts")
-      .select("id, name, content, tags")
+      .select("id, name, content")
       .eq("user_id", userId)
       .is("use_cases", null);
 
@@ -40,7 +42,7 @@ export async function POST() {
         const useCases = await generateUseCases(prompt.name, prompt.content);
 
         // Regenerate embedding with use cases included
-        const embeddingText = getEmbeddingText(prompt.name, prompt.content, prompt.tags, useCases);
+        const embeddingText = getEmbeddingText(prompt.name, prompt.content, useCases);
         const embedding = await generateEmbedding(embeddingText);
 
         // Update the prompt
@@ -67,6 +69,9 @@ export async function POST() {
       errors: errors.length > 0 ? errors : undefined,
     });
   } catch (error) {
+    if (error instanceof ConfigError) {
+      return NextResponse.json({ error: error.message, code: error.code }, { status: 500 });
+    }
     console.error("Backfill error:", error);
     return NextResponse.json({ error: "Backfill failed" }, { status: 500 });
   }

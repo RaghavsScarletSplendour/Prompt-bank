@@ -7,7 +7,6 @@ import { Category } from "@/lib/types";
 interface Prompt {
   id: string;
   name: string;
-  tags: string | null;
   content: string;
   created_at: string;
   category_id: string | null;
@@ -29,7 +28,6 @@ export default function PromptCard({ prompt, onDelete, onEdit, showSimilarity, c
   const [startInEditMode, setStartInEditMode] = useState(false);
   const [copied, setCopied] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const tags = prompt.tags ? prompt.tags.split(",").map((t) => t.trim()) : [];
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -120,21 +118,13 @@ export default function PromptCard({ prompt, onDelete, onEdit, showSimilarity, c
             </div>
           </div>
         </div>
-        {(categoryName || tags.length > 0) && (
+        {categoryName && (
           <div className="flex flex-wrap gap-1 mb-3">
             {categoryName && (
               <span className="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">
                 {categoryName}
               </span>
             )}
-            {tags.map((tag, index) => (
-              <span
-                key={index}
-                className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded"
-              >
-                {tag}
-              </span>
-            ))}
           </div>
         )}
         <p className="text-gray-600 text-sm whitespace-pre-wrap line-clamp-4">

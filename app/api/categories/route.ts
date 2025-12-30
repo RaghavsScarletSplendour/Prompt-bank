@@ -1,6 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
-import { supabase } from "@/lib/supabase";
+import { getSupabaseClient } from "@/lib/supabase";
 import { NextResponse } from "next/server";
+import { ConfigError } from "@/lib/errors";
 
 export async function GET() {
   const { userId } = await auth();
@@ -8,18 +9,30 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { data, error } = await supabase
-    .from("categories")
-    .select("*")
-    .eq("user_id", userId)
-    .order("name", { ascending: true });
+  try {
+    const supabase = getSupabaseClient();
+    const { data, error } = await supabase
+      .from("categories")
+      .select("*")
+      .eq("user_id", userId)
+      .order("name", { ascending: true });
 
-  if (error) {
-    console.error("Database error:", error);
+    if (error) {
+      console.error("Database error:", error);
+      return NextResponse.json({ error: "Failed to fetch categories" }, { status: 500 });
+    }
+
+    return NextResponse.json({ categories: data });
+  } catch (err) {
+    if (err instanceof ConfigError) {
+      return NextResponse.json(
+        { error: err.message, code: err.code },
+        { status: 500 }
+      );
+    }
+    console.error("Request error:", err);
     return NextResponse.json({ error: "Failed to fetch categories" }, { status: 500 });
   }
-
-  return NextResponse.json({ categories: data });
 }
 
 export async function POST(req: Request) {
@@ -29,6 +42,7 @@ export async function POST(req: Request) {
   }
 
   try {
+    const supabase = getSupabaseClient();
     const body = await req.json();
     const { name } = body;
 
@@ -57,6 +71,9 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ category: data });
   } catch (error) {
+    if (error instanceof ConfigError) {
+      return NextResponse.json({ error: error.message, code: error.code }, { status: 500 });
+    }
     console.error("Request error:", error);
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
@@ -69,6 +86,7 @@ export async function PUT(req: Request) {
   }
 
   try {
+    const supabase = getSupabaseClient();
     const body = await req.json();
     const { id, name } = body;
 
@@ -104,6 +122,9 @@ export async function PUT(req: Request) {
 
     return NextResponse.json({ category: data });
   } catch (error) {
+    if (error instanceof ConfigError) {
+      return NextResponse.json({ error: error.message, code: error.code }, { status: 500 });
+    }
     console.error("Request error:", error);
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
@@ -116,6 +137,7 @@ export async function DELETE(req: Request) {
   }
 
   try {
+    const supabase = getSupabaseClient();
     const body = await req.json();
     const { id } = body;
 
@@ -137,6 +159,9 @@ export async function DELETE(req: Request) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
+    if (error instanceof ConfigError) {
+      return NextResponse.json({ error: error.message, code: error.code }, { status: 500 });
+    }
     console.error("Request error:", error);
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }

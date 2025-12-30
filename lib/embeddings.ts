@@ -26,11 +26,9 @@ export async function generateEmbedding(text: string): Promise<number[]> {
 export function getEmbeddingText(
   name: string,
   content: string,
-  tags: string | null,
   useCases: string | null = null
 ): string {
   const parts = [name, content];
-  if (tags) parts.push(tags);
   if (useCases) parts.push(useCases);
   return parts.join(" ");
 }

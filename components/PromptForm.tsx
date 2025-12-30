@@ -14,7 +14,6 @@ interface PromptFormProps {
 
 export default function PromptForm({ isOpen, onClose, onSuccess, categories }: PromptFormProps) {
   const [name, setName] = useState("");
-  const [tags, setTags] = useState("");
   const [content, setContent] = useState("");
   const [categoryId, setCategoryId] = useState<string>("");
   const [loading, setLoading] = useState(false);
@@ -25,7 +24,7 @@ export default function PromptForm({ isOpen, onClose, onSuccess, categories }: P
     setError("");
 
     // Client-side validation using shared logic
-    const validation = validatePromptInput({ name, content, tags });
+    const validation = validatePromptInput({ name, content });
     if (!validation.success) {
       setError(validation.error);
       return;
@@ -39,7 +38,6 @@ export default function PromptForm({ isOpen, onClose, onSuccess, categories }: P
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: name.trim(),
-          tags: tags.trim(),
           content: content.trim(),
           category_id: categoryId || null,
         }),
@@ -47,7 +45,6 @@ export default function PromptForm({ isOpen, onClose, onSuccess, categories }: P
 
       if (res.ok) {
         setName("");
-        setTags("");
         setContent("");
         setCategoryId("");
         setError("");
@@ -103,19 +100,6 @@ export default function PromptForm({ isOpen, onClose, onSuccess, categories }: P
               </option>
             ))}
           </select>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Tags (comma-separated)
-          </label>
-          <input
-            type="text"
-            value={tags}
-            onChange={(e) => setTags(e.target.value)}
-            className="w-full border border-gray-300 rounded-md px-3 py-2 text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="coding, writing, creative"
-            maxLength={PROMPT_LIMITS.tags.maxLength}
-          />
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">

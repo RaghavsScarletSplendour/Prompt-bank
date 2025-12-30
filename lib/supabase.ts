@@ -1,6 +1,17 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { requireEnv } from "@/lib/errors";
 
-export const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+let supabaseClient: SupabaseClient | null = null;
+
+export function getSupabaseClient(): SupabaseClient {
+  if (supabaseClient) return supabaseClient;
+
+  const url = requireEnv("NEXT_PUBLIC_SUPABASE_URL");
+  const serviceRoleKey = requireEnv("SUPABASE_SERVICE_ROLE_KEY");
+
+  supabaseClient = createClient(url, serviceRoleKey, {
+    auth: { persistSession: false },
+  });
+
+  return supabaseClient;
+}

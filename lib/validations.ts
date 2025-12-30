@@ -2,12 +2,11 @@
 export const PROMPT_LIMITS = {
   name: { maxLength: 100 },
   content: { maxLength: 10000 },
-  tags: { maxLength: 500 },
 } as const;
 
 // Types
 export type ValidationResult =
-  | { success: true; data: { name: string; content: string; tags: string | null } }
+  | { success: true; data: { name: string; content: string } }
   | { success: false; error: string };
 
 // Sanitize string: trim and strip control characters
@@ -29,7 +28,7 @@ export function validatePromptInput(input: unknown): ValidationResult {
     return { success: false, error: 'Invalid request body' };
   }
 
-  const { name, content, tags } = input as Record<string, unknown>;
+  const { name, content } = input as Record<string, unknown>;
 
   // Name validation
   if (!name || typeof name !== 'string' || name.trim().length === 0) {
@@ -47,23 +46,12 @@ export function validatePromptInput(input: unknown): ValidationResult {
     return { success: false, error: `Content too long (max ${PROMPT_LIMITS.content.maxLength.toLocaleString()} characters)` };
   }
 
-  // Tags validation (optional)
-  if (tags !== undefined && tags !== null && tags !== '') {
-    if (typeof tags !== 'string') {
-      return { success: false, error: 'Tags must be a string' };
-    }
-    if (tags.length > PROMPT_LIMITS.tags.maxLength) {
-      return { success: false, error: `Tags too long (max ${PROMPT_LIMITS.tags.maxLength} characters)` };
-    }
-  }
-
   // Return sanitized data
   return {
     success: true,
     data: {
       name: sanitizeString(name as string),
       content: sanitizeString(content as string, true),
-      tags: tags && typeof tags === 'string' && tags.trim() ? sanitizeString(tags) : null,
     },
   };
 }

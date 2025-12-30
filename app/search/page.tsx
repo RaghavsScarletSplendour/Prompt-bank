@@ -7,7 +7,6 @@ import { Category } from "@/lib/types";
 interface Prompt {
   id: string;
   name: string;
-  tags: string | null;
   content: string;
   created_at: string;
   category_id: string | null;
@@ -66,7 +65,7 @@ export default function SearchPage() {
       });
       const data = await res.json();
 
-      if (!res.ok) {
+    if (!res.ok) {
         setError(data.error || "Semantic search failed. Please try again.");
         setSearchResults([]);
         return;

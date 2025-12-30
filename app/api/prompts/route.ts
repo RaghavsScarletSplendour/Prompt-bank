@@ -1,9 +1,10 @@
 import { auth } from "@clerk/nextjs/server";
-import { supabase } from "@/lib/supabase";
+import { getSupabaseClient } from "@/lib/supabase";
 import { NextResponse } from "next/server";
 import { validatePromptInput } from "@/lib/validations";
 import { generateEmbedding, getEmbeddingText } from "@/lib/embeddings";
 import { generateUseCases } from "@/lib/ai";
+import { ConfigError } from "@/lib/errors";
 
 export async function GET() {
   const { userId } = await auth();
@@ -11,18 +12,27 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { data, error } = await supabase
-    .from("prompts")
-    .select("*")
-    .eq("user_id", userId)
-    .order("created_at", { ascending: false });
+  try {
+    const supabase = getSupabaseClient();
+    const { data, error } = await supabase
+      .from("prompts")
+      .select("*")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false });
 
-  if (error) {
-    console.error("Database error:", error);
+    if (error) {
+      console.error("Database error:", error);
+      return NextResponse.json({ error: "Failed to fetch prompts" }, { status: 500 });
+    }
+
+    return NextResponse.json({ prompts: data });
+  } catch (err) {
+    if (err instanceof ConfigError) {
+      return NextResponse.json({ error: err.message, code: err.code }, { status: 500 });
+    }
+    console.error("Request error:", err);
     return NextResponse.json({ error: "Failed to fetch prompts" }, { status: 500 });
   }
-
-  return NextResponse.json({ prompts: data });
 }
 
 export async function POST(req: Request) {
@@ -32,6 +42,7 @@ export async function POST(req: Request) {
   }
 
   try {
+    const supabase = getSupabaseClient();
     const body = await req.json();
     const validation = validatePromptInput(body);
 
@@ -39,7 +50,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: validation.error }, { status: 400 });
     }
 
-    const { name, content, tags } = validation.data;
+    const { name, content } = validation.data;
     const category_id = body.category_id || null;
 
     // Generate use cases for intent-based search (graceful degradation if it fails)
@@ -53,7 +64,7 @@ export async function POST(req: Request) {
     // Generate embedding for semantic search (graceful degradation if it fails)
     let embedding: number[] | null = null;
     try {
-      const embeddingText = getEmbeddingText(name, content, tags, useCases);
+      const embeddingText = getEmbeddingText(name, content, useCases);
       embedding = await generateEmbedding(embeddingText);
     } catch (error) {
       console.error("Failed to generate embedding:", error);
@@ -61,7 +72,7 @@ export async function POST(req: Request) {
 
     const { data, error } = await supabase
       .from("prompts")
-      .insert({ user_id: userId, name, tags, content, embedding, use_cases: useCases, category_id })
+      .insert({ user_id: userId, name, content, embedding, use_cases: useCases, category_id })
       .select()
       .single();
 
@@ -72,6 +83,9 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ prompt: data });
   } catch (error) {
+    if (error instanceof ConfigError) {
+      return NextResponse.json({ error: error.message, code: error.code }, { status: 500 });
+    }
     console.error("Request error:", error);
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
@@ -84,6 +98,7 @@ export async function PUT(req: Request) {
   }
 
   try {
+    const supabase = getSupabaseClient();
     const body = await req.json();
     const { id } = body;
 
@@ -99,7 +114,7 @@ export async function PUT(req: Request) {
       return NextResponse.json({ error: validation.error }, { status: 400 });
     }
 
-    const { name, content, tags } = validation.data;
+    const { name, content } = validation.data;
     const category_id = body.category_id !== undefined ? body.category_id : undefined;
 
     // Regenerate use cases for intent-based search (graceful degradation if it fails)
@@ -113,13 +128,13 @@ export async function PUT(req: Request) {
     // Regenerate embedding for semantic search (graceful degradation if it fails)
     let embedding: number[] | null = null;
     try {
-      const embeddingText = getEmbeddingText(name, content, tags, useCases);
+      const embeddingText = getEmbeddingText(name, content, useCases);
       embedding = await generateEmbedding(embeddingText);
     } catch (error) {
       console.error("Failed to generate embedding:", error);
     }
 
-    const updateData: Record<string, unknown> = { name, tags, content, embedding, use_cases: useCases };
+    const updateData: Record<string, unknown> = { name, content, embedding, use_cases: useCases };
     if (category_id !== undefined) {
       updateData.category_id = category_id;
     }
@@ -139,6 +154,9 @@ export async function PUT(req: Request) {
 
     return NextResponse.json({ prompt: data });
   } catch (error) {
+    if (error instanceof ConfigError) {
+      return NextResponse.json({ error: error.message, code: error.code }, { status: 500 });
+    }
     console.error("Request error:", error);
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
@@ -151,6 +169,7 @@ export async function DELETE(req: Request) {
   }
 
   try {
+    const supabase = getSupabaseClient();
     const body = await req.json();
     const { id } = body;
 
@@ -173,6 +192,9 @@ export async function DELETE(req: Request) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
+    if (error instanceof ConfigError) {
+      return NextResponse.json({ error: error.message, code: error.code }, { status: 500 });
+    }
     console.error("Request error:", error);
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }

@@ -8,7 +8,6 @@ import { Category } from "@/lib/types";
 interface Prompt {
   id: string;
   name: string;
-  tags: string | null;
   content: string;
   created_at: string;
   category_id: string | null;

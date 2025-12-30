@@ -29,7 +29,7 @@ async function backfillEmbeddings() {
   // Fetch prompts without embeddings
   const { data: prompts, error } = await supabase
     .from("prompts")
-    .select("id, name, content, tags")
+    .select("id, name, content")
     .is("embedding", null);
 
   if (error) {
@@ -48,7 +48,7 @@ async function backfillEmbeddings() {
   let failed = 0;
 
   for (const prompt of prompts) {
-    const text = [prompt.name, prompt.content, prompt.tags]
+    const text = [prompt.name, prompt.content]
       .filter(Boolean)
       .join(" ");
 
