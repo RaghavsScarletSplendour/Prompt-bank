@@ -43,7 +43,7 @@ export default function Sidebar() {
     <aside
       className={`${
         isCollapsed ? "w-16" : "w-fit pr-6"
-      } bg-white border-r border-gray-200 min-h-screen p-4 transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] flex flex-col justify-between`}
+      } bg-white min-h-screen p-4 transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] flex flex-col justify-between`}
     >
       <div>
         <div className="flex items-center gap-3 mb-6">
