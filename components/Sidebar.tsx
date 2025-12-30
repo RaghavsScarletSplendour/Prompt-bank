@@ -42,7 +42,7 @@ export default function Sidebar() {
     <aside
       className={`${
         isCollapsed ? "w-16" : "w-fit pr-6"
-      } bg-white border-r border-gray-200 min-h-screen p-4 transition-all duration-300 ease-in-out`}
+      } bg-white border-r border-gray-200 min-h-screen p-4 transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]`}
     >
       <div className="flex items-center gap-3 mb-6">
         <button
@@ -55,7 +55,7 @@ export default function Sidebar() {
           </svg>
         </button>
         <h1
-          className={`text-xl font-bold text-gray-900 whitespace-nowrap overflow-hidden transition-all duration-300 ${
+          className={`text-xl font-bold text-gray-900 whitespace-nowrap overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] ${
             isCollapsed ? "opacity-0 w-0" : "opacity-100"
           }`}
         >
@@ -67,7 +67,7 @@ export default function Sidebar() {
           <Link
             key={link.href}
             href={link.href}
-            className={`flex items-center gap-4 py-2 text-base font-medium transition-all duration-300 ${
+            className={`flex items-center gap-4 py-2 text-base font-medium transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] ${
               isCollapsed ? "p-1.5 w-fit" : "px-3"
             } ${
               pathname === link.href
@@ -77,7 +77,7 @@ export default function Sidebar() {
           >
             <span className="flex-shrink-0">{link.icon}</span>
             <span
-              className={`whitespace-nowrap overflow-hidden transition-all duration-300 ${
+              className={`whitespace-nowrap overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] ${
                 isCollapsed ? "opacity-0 w-0" : "opacity-100"
               }`}
             >
