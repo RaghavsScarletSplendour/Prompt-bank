@@ -1,17 +1,27 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { requireEnv } from "@/lib/errors";
 
-let supabaseClient: SupabaseClient | null = null;
+let serviceRoleClient: SupabaseClient | null = null;
 
-export function getSupabaseClient(): SupabaseClient {
-  if (supabaseClient) return supabaseClient;
-
+// Service role client for admin operations (bypasses RLS)
+export function getSupabaseServiceClient(): SupabaseClient {
+  if (serviceRoleClient) return serviceRoleClient;
   const url = requireEnv("NEXT_PUBLIC_SUPABASE_URL");
   const serviceRoleKey = requireEnv("SUPABASE_SERVICE_ROLE_KEY");
-
-  supabaseClient = createClient(url, serviceRoleKey, {
+  serviceRoleClient = createClient(url, serviceRoleKey, {
     auth: { persistSession: false },
   });
+  return serviceRoleClient;
+}
 
-  return supabaseClient;
+// Authenticated client for user operations (respects RLS)
+export function getSupabaseClient(supabaseAccessToken: string): SupabaseClient {
+  const url = requireEnv("NEXT_PUBLIC_SUPABASE_URL");
+  const anonKey = requireEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY");
+  return createClient(url, anonKey, {
+    auth: { persistSession: false },
+    global: {
+      headers: { Authorization: `Bearer ${supabaseAccessToken}` },
+    },
+  });
 }

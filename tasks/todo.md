@@ -370,3 +370,110 @@ Before adding new UI components, verify:
    | `ghost` | Cancel, Close, low emphasis |
    | `danger` | Destructive actions (Delete) |
    | `icon` | Icon-only buttons |
+
+---
+
+## Supabase RLS Security Implementation (Dec 30, 2025)
+
+### Summary
+Implemented database-level Row Level Security (RLS) with Clerk JWT integration to replace application-level `user_id` filtering. This provides true defense-in-depth security.
+
+### Problem
+The app was using Supabase service role key (which bypasses RLS) and manually filtering by `user_id` in application code. This was error-prone - any missed filter could expose other users' data.
+
+### Solution
+Integrated Clerk JWTs with Supabase so that RLS policies enforce user isolation at the database level.
+
+### Files Created (1)
+- `lib/auth.ts` - Helper to get Clerk JWT token for Supabase (`requireSupabaseToken()`)
+
+### Files Modified (5)
+- `lib/supabase.ts` - Split into `getSupabaseClient(token)` (uses anon key + JWT, respects RLS) and `getSupabaseServiceClient()` (service role, bypasses RLS)
+- `app/api/prompts/route.ts` - Uses RLS-aware client, removed `.eq("user_id", userId)` from queries
+- `app/api/categories/route.ts` - Same pattern
+- `app/api/prompts/search/route.ts` - Uses RLS-aware client, removed `match_user_id` param from RPC
+- `app/api/prompts/backfill/route.ts` - Uses RLS-aware client, removed manual filters
+
+### Manual Setup Required
+
+**1. Clerk Dashboard - Create JWT Template:**
+- Go to JWT Templates → Create "supabase" template
+- Set signing key = Supabase JWT Secret
+- Claims: `{"aud": "authenticated", "role": "authenticated", "user_id": "{{user.id}}"}`
+
+**2. Add Environment Variable:**
+```
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<your_anon_key>
+```
+
+**3. Supabase SQL - Enable RLS & Create Policies:**
+```sql
+-- Enable RLS
+ALTER TABLE prompts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE categories ENABLE ROW LEVEL SECURITY;
+
+-- Prompts policies
+CREATE POLICY "Users can view their own prompts" ON prompts FOR SELECT
+  USING (auth.jwt() ->> 'user_id' = user_id);
+CREATE POLICY "Users can insert their own prompts" ON prompts FOR INSERT
+  WITH CHECK (auth.jwt() ->> 'user_id' = user_id);
+CREATE POLICY "Users can update their own prompts" ON prompts FOR UPDATE
+  USING (auth.jwt() ->> 'user_id' = user_id)
+  WITH CHECK (auth.jwt() ->> 'user_id' = user_id);
+CREATE POLICY "Users can delete their own prompts" ON prompts FOR DELETE
+  USING (auth.jwt() ->> 'user_id' = user_id);
+
+-- Categories policies (same pattern)
+CREATE POLICY "Users can view their own categories" ON categories FOR SELECT
+  USING (auth.jwt() ->> 'user_id' = user_id);
+CREATE POLICY "Users can insert their own categories" ON categories FOR INSERT
+  WITH CHECK (auth.jwt() ->> 'user_id' = user_id);
+CREATE POLICY "Users can update their own categories" ON categories FOR UPDATE
+  USING (auth.jwt() ->> 'user_id' = user_id)
+  WITH CHECK (auth.jwt() ->> 'user_id' = user_id);
+CREATE POLICY "Users can delete their own categories" ON categories FOR DELETE
+  USING (auth.jwt() ->> 'user_id' = user_id);
+```
+
+**4. Supabase SQL - Update `match_prompts` RPC:**
+```sql
+DROP FUNCTION IF EXISTS match_prompts(vector(1536), text, int, float);
+
+CREATE OR REPLACE FUNCTION match_prompts(
+  query_embedding vector(1536),
+  match_count int DEFAULT 10,
+  match_threshold float DEFAULT 0.5
+)
+RETURNS TABLE (
+  id uuid, name text, content text, use_cases text,
+  category_id uuid, created_at timestamptz, similarity float
+)
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = public
+AS $$
+BEGIN
+  RETURN QUERY
+  SELECT p.id, p.name, p.content, p.use_cases, p.category_id, p.created_at,
+         1 - (p.embedding <=> query_embedding) AS similarity
+  FROM prompts p
+  WHERE p.user_id = (auth.jwt() ->> 'user_id')
+    AND p.embedding IS NOT NULL
+    AND 1 - (p.embedding <=> query_embedding) > match_threshold
+  ORDER BY p.embedding <=> query_embedding
+  LIMIT match_count;
+END;
+$$;
+```
+
+### Security Improvement
+| Before | After |
+|--------|-------|
+| Service role key (bypasses RLS) | Anon key + JWT (respects RLS) |
+| Manual `.eq("user_id")` filters | Database enforces isolation |
+| Bug = data leak | Bug = empty result (safe) |
+
+### Rollback Plan
+```sql
+ALTER TABLE prompts DISABLE ROW LEVEL SECURITY;
+ALTER TABLE categories DISABLE ROW LEVEL SECURITY;
+```
+Then revert code to use `getSupabaseServiceClient()` with manual filters.

@@ -1,5 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import { getSupabaseClient } from "@/lib/supabase";
+import { requireSupabaseToken } from "@/lib/auth";
 import { NextResponse } from "next/server";
 import { generateEmbedding, getEmbeddingText } from "@/lib/embeddings";
 import { generateUseCases } from "@/lib/ai";
@@ -16,12 +17,12 @@ export async function POST() {
   }
 
   try {
-    const supabase = getSupabaseClient();
-    // Fetch all prompts without use_cases
+    const supabaseToken = await requireSupabaseToken();
+    const supabase = getSupabaseClient(supabaseToken);
+    // Fetch all prompts without use_cases (RLS filters by user)
     const { data: prompts, error: fetchError } = await supabase
       .from("prompts")
       .select("id, name, content")
-      .eq("user_id", userId)
       .is("use_cases", null);
 
     if (fetchError) {
@@ -45,12 +46,11 @@ export async function POST() {
         const embeddingText = getEmbeddingText(prompt.name, prompt.content, useCases);
         const embedding = await generateEmbedding(embeddingText);
 
-        // Update the prompt
+        // Update the prompt (RLS ensures only own prompts can be updated)
         const { error: updateError } = await supabase
           .from("prompts")
           .update({ use_cases: useCases, embedding })
-          .eq("id", prompt.id)
-          .eq("user_id", userId);
+          .eq("id", prompt.id);
 
         if (updateError) {
           errors.push(`Failed to update ${prompt.id}: ${updateError.message}`);

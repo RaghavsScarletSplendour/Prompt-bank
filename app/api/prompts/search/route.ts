@@ -1,5 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import { getSupabaseClient } from "@/lib/supabase";
+import { requireSupabaseToken } from "@/lib/auth";
 import { NextResponse } from "next/server";
 import { generateEmbedding } from "@/lib/embeddings";
 import { expandSearchQuery } from "@/lib/ai";
@@ -99,10 +100,10 @@ export async function POST(req: Request) {
     const queryEmbedding = await generateEmbedding(expandedQuery);
 
     // Call Supabase RPC function for vector similarity search
-    const supabase = getSupabaseClient();
+    const supabaseToken = await requireSupabaseToken();
+    const supabase = getSupabaseClient(supabaseToken);
     const { data, error } = await supabase.rpc("match_prompts", {
       query_embedding: queryEmbedding,
-      match_user_id: userId,
       match_count: limit,
       match_threshold: 0.4,
     });
