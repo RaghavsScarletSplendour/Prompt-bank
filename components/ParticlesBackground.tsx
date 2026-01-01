@@ -33,7 +33,7 @@ export default function ParticlesBackground() {
           value: 227,
           density: {
             enable: true,
-            area: 1578,
+            area: 1578.2983970406906,
           },
         },
         color: {
@@ -46,28 +46,33 @@ export default function ParticlesBackground() {
           value: 0.5,
         },
         size: {
-          value: { min: 1, max: 8 },
+          value: { min: 0.1, max: 7.891491985203452 },
         },
         links: {
           enable: true,
-          distance: 224,
+          distance: 224.4770136540148,
           color: "#ffffff",
-          opacity: 0.47,
-          width: 1.6,
+          opacity: 0.4730051359138169,
+          width: 1.60340724038582,
         },
         move: {
           enable: true,
-          speed: 6,
+          speed: 2,
           direction: "none",
           random: false,
           straight: false,
           outModes: {
             default: "out",
           },
+          attract: {
+            enable: false,
+            rotateX: 600,
+            rotateY: 1200,
+          },
         },
       },
       interactivity: {
-        detectsOn: "canvas",
+        detectsOn: "window",
         events: {
           onHover: {
             enable: true,
