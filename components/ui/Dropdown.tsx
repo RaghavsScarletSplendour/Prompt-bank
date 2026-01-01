@@ -37,7 +37,7 @@ export function Dropdown({ items, trigger }: DropdownProps) {
         </Button>
       )}
       {isOpen && (
-        <div className="absolute right-0 mt-1 w-32 bg-gray-800 border border-gray-700 rounded-md shadow-lg z-10">
+        <div className="absolute right-0 mt-1 w-32 bg-[#0d1117] border border-white/10 rounded-lg shadow-lg z-10">
           {items.map((item, index) => (
             <button
               key={index}

@@ -30,7 +30,7 @@ export default function ParticlesBackground() {
       fpsLimit: 120,
       particles: {
         number: {
-          value: 227,
+          value: 120,
           density: {
             enable: true,
             area: 1578.2983970406906,
@@ -43,7 +43,7 @@ export default function ParticlesBackground() {
           type: "circle",
         },
         opacity: {
-          value: 0.5,
+          value: 1,
         },
         size: {
           value: { min: 0.1, max: 7.891491985203452 },

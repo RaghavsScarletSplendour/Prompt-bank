@@ -13,11 +13,11 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variantClasses: Record<ButtonVariant, string> = {
-  primary: "bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50",
+  primary: "bg-cyan-600 text-white hover:bg-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.3)] disabled:opacity-50",
   secondary: "bg-gray-800 text-gray-100 hover:bg-gray-700 hover:text-white disabled:opacity-50",
   ghost: "text-gray-400 hover:text-gray-200 hover:bg-gray-800 disabled:opacity-50",
   danger: "bg-red-600 text-white hover:bg-red-700 disabled:opacity-50",
-  icon: "p-1 text-gray-400 hover:text-gray-200 hover:bg-gray-800 rounded disabled:opacity-50",
+  icon: "p-1 text-gray-400 hover:text-gray-200 hover:bg-gray-800 rounded-lg disabled:opacity-50",
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
@@ -43,7 +43,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
     const baseClasses = isIcon
       ? variantClasses.icon
-      : `${variantClasses[variant]} ${sizeClasses[size]} rounded-md transition-colors`;
+      : `${variantClasses[variant]} ${sizeClasses[size]} rounded-lg transition-colors`;
 
     return (
       <button

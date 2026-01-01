@@ -1,7 +1,7 @@
 import { InputHTMLAttributes, TextareaHTMLAttributes } from "react";
 
 const baseClasses =
-  "w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500";
+  "w-full bg-[#0d1117] border border-white/10 rounded-lg px-3 py-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-cyan-500";
 
 interface FormInputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;

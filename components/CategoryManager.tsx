@@ -38,7 +38,7 @@ export default function CategoryManager({
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-        className="flex items-center gap-2 px-3 py-2 text-sm bg-gray-800 border border-white/5 rounded-xl hover:bg-gray-700 transition-colors"
+        className="flex items-center gap-2 px-3 py-2 text-sm bg-[#0d1117] border border-white/10 rounded-lg hover:bg-gray-800 transition-colors"
       >
         <span className="text-gray-400">Category:</span>
         <span className="font-medium text-gray-100">{getSelectedLabel()}</span>
@@ -48,7 +48,7 @@ export default function CategoryManager({
       </button>
 
       {isDropdownOpen && (
-        <div className="absolute top-full left-0 mt-1 w-48 bg-gray-800 border border-gray-700 rounded-md shadow-lg z-10">
+        <div className="absolute top-full left-0 mt-1 w-48 bg-[#0d1117] border border-white/10 rounded-lg shadow-lg z-10">
           <div className="py-1">
             <button
               onClick={() => {
@@ -72,7 +72,7 @@ export default function CategoryManager({
             >
               Uncategorized
             </button>
-            {categories.length > 0 && <div className="border-t border-gray-700 my-1" />}
+            {categories.length > 0 && <div className="border-t border-white/10 my-1" />}
             {categories.map((category) => (
               <button
                 key={category.id}
@@ -88,7 +88,7 @@ export default function CategoryManager({
                 {category.name}
               </button>
             ))}
-            <div className="border-t border-gray-700 my-1" />
+            <div className="border-t border-white/10 my-1" />
             <button
               onClick={() => {
                 setIsManageOpen(true);

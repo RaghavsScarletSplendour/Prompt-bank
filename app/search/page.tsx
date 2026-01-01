@@ -140,7 +140,7 @@ export default function SearchPage() {
         }
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
-        className="w-full max-w-md px-4 py-2 bg-gray-800 border border-gray-700 rounded-md text-sm text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-6"
+        className="w-full max-w-md px-4 py-2 bg-[#0d1117] border border-white/10 rounded-lg text-sm text-gray-100 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent mb-6"
       />
 
       {/* Error Message */}

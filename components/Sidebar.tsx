@@ -43,13 +43,14 @@ export default function Sidebar() {
     <aside
       className={`${
         isCollapsed ? "w-16" : "w-fit pr-6"
+
       } bg-black/70 backdrop-blur-sm min-h-screen p-4 transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] flex flex-col justify-between`}
     >
       <div>
         <div className="flex items-center gap-3 mb-6">
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="p-1 hover:bg-gray-800 rounded-md transition-colors cursor-pointer"
+            className="p-1 hover:bg-gray-800 rounded-lg transition-colors cursor-pointer"
             aria-label="Toggle sidebar"
           >
             <svg className="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
