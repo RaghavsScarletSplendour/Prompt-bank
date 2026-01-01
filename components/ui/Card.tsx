@@ -20,8 +20,11 @@ export function Card({
   className = "",
   ...props
 }: CardProps) {
-  const baseClasses = "bg-gray-800 border border-white/5 rounded-2xl";
-  const shadowStyle = { boxShadow: "var(--shadow-card)" };
+  const baseClasses = "border border-white/10 rounded-2xl";
+  const cardStyle = {
+    boxShadow: "0 4px 20px rgba(0, 0, 0, 0.4)",
+    backgroundColor: "#0d1117"
+  };
   const interactiveClasses = interactive
     ? "cursor-pointer hover:border-white/10 transition-colors"
     : "";
@@ -29,7 +32,7 @@ export function Card({
   return (
     <div
       className={`${baseClasses} ${paddingClasses[padding]} ${interactiveClasses} ${className}`}
-      style={shadowStyle}
+      style={cardStyle}
       {...props}
     >
       {children}

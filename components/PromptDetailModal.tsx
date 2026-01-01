@@ -1,11 +1,15 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { PROMPT_LIMITS, validatePromptInput } from "@/lib/validations";
 import Modal from "./Modal";
 import { Category } from "@/lib/types";
 import { CategoryBadge } from "./ui/CategoryBadge";
 import Button from "./ui/Button";
+import CopyButton from "./ui/CopyButton";
+import Dropdown from "./ui/Dropdown";
+import { FormSelect } from "./ui/FormInput";
+import ErrorAlert from "./ui/ErrorAlert";
 
 interface Prompt {
   id: string;
@@ -27,14 +31,11 @@ interface PromptDetailModalProps {
 
 export default function PromptDetailModal({ isOpen, onClose, prompt, onSave, onDelete, initialEditMode = false, categories }: PromptDetailModalProps) {
   const [isEditing, setIsEditing] = useState(initialEditMode);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [copied, setCopied] = useState(false);
   const [name, setName] = useState(prompt.name);
   const [content, setContent] = useState(prompt.content);
   const [categoryId, setCategoryId] = useState(prompt.category_id || "");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const menuRef = useRef<HTMLDivElement>(null);
 
   // Reset form when prompt changes or modal opens
   useEffect(() => {
@@ -43,19 +44,7 @@ export default function PromptDetailModal({ isOpen, onClose, prompt, onSave, onD
     setCategoryId(prompt.category_id || "");
     setIsEditing(initialEditMode);
     setError("");
-    setMenuOpen(false);
   }, [prompt, isOpen, initialEditMode]);
-
-  // Close menu when clicking outside
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setMenuOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   const categoryName = categories.find((c) => c.id === prompt.category_id)?.name;
   const createdDate = new Date(prompt.created_at).toLocaleDateString("en-US", {
@@ -72,12 +61,6 @@ export default function PromptDetailModal({ isOpen, onClose, prompt, onSave, onD
     setCategoryId(prompt.category_id || "");
     setIsEditing(false);
     setError("");
-  };
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(prompt.content);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
   };
 
   const handleSave = async () => {
@@ -122,11 +105,7 @@ export default function PromptDetailModal({ isOpen, onClose, prompt, onSave, onD
   return (
     <Modal isOpen={isOpen} onClose={onClose} maxWidth="max-w-2xl">
       <div className="max-h-[80vh] overflow-y-auto">
-        {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-            {error}
-          </div>
-        )}
+        <ErrorAlert message={error} />
 
         <div className="flex justify-between items-start mb-4">
           {isEditing ? (
@@ -143,47 +122,13 @@ export default function PromptDetailModal({ isOpen, onClose, prompt, onSave, onD
           <div className="flex items-center gap-1">
             {!isEditing && (
               <>
-                <Button variant="icon" onClick={handleCopy} title="Copy to clipboard">
-                  {copied ? (
-                    <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                  ) : (
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                    </svg>
-                  )}
-                </Button>
-                <div className="relative" ref={menuRef}>
-                  <Button variant="icon" onClick={() => setMenuOpen(!menuOpen)}>
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-                    </svg>
-                  </Button>
-                {menuOpen && (
-                  <div className="absolute right-0 mt-1 w-32 bg-gray-800 border border-gray-700 rounded-md shadow-lg z-10">
-                    <button
-                      onClick={() => {
-                        setMenuOpen(false);
-                        setIsEditing(true);
-                      }}
-                      className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-700"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => {
-                        setMenuOpen(false);
-                        onClose();
-                        onDelete?.();
-                      }}
-                      className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-gray-700"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                )}
-                </div>
+                <CopyButton text={prompt.content} />
+                <Dropdown
+                  items={[
+                    { label: "Edit", onClick: () => setIsEditing(true) },
+                    { label: "Delete", onClick: () => { onClose(); onDelete?.(); }, variant: "danger" },
+                  ]}
+                />
               </>
             )}
             <Button variant="icon" onClick={onClose}>
@@ -195,25 +140,19 @@ export default function PromptDetailModal({ isOpen, onClose, prompt, onSave, onD
         </div>
 
         {isEditing ? (
-          <>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-300 mb-1">
-                Category
-              </label>
-              <select
-                value={categoryId}
-                onChange={(e) => setCategoryId(e.target.value)}
-                className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">No Category</option>
-                {categories.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </>
+          <FormSelect
+            label="Category"
+            value={categoryId}
+            onChange={(e) => setCategoryId(e.target.value)}
+            className="mb-4"
+          >
+            <option value="">No Category</option>
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </FormSelect>
         ) : (
           <div className="flex flex-wrap gap-1 mb-4">
             {categoryName && prompt.category_id && (

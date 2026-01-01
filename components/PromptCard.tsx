@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import PromptDetailModal from "./PromptDetailModal";
 import { Category } from "@/lib/types";
 import { CategoryBadge } from "./ui/CategoryBadge";
 import { Card } from "./ui/Card";
-import Button from "./ui/Button";
+import CopyButton from "./ui/CopyButton";
+import Dropdown from "./ui/Dropdown";
 
 interface Prompt {
   id: string;
@@ -26,29 +27,23 @@ interface PromptCardProps {
 }
 
 export default function PromptCard({ prompt, onDelete, onEdit, showSimilarity, categories, categoryName }: PromptCardProps) {
-  const [menuOpen, setMenuOpen] = useState(false);
   const [detailOpen, setDetailOpen] = useState(false);
   const [startInEditMode, setStartInEditMode] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
 
-  // Close menu when clicking outside
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setMenuOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const handleCopy = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    navigator.clipboard.writeText(prompt.content);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+  const dropdownItems = [
+    {
+      label: "Edit",
+      onClick: () => {
+        setStartInEditMode(true);
+        setDetailOpen(true);
+      },
+    },
+    {
+      label: "Delete",
+      onClick: () => onDelete(prompt.id),
+      variant: "danger" as const,
+    },
+  ];
 
   return (
     <>
@@ -72,54 +67,8 @@ export default function PromptCard({ prompt, onDelete, onEdit, showSimilarity, c
             </div>
           </div>
           <div className="flex items-center flex-shrink-0" onClick={(e) => e.stopPropagation()}>
-            <Button
-              variant="icon"
-              onClick={handleCopy}
-              title="Copy to clipboard"
-            >
-              {copied ? (
-                <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-              ) : (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                </svg>
-              )}
-            </Button>
-            <div className="relative" ref={menuRef}>
-            <Button
-              variant="icon"
-              onClick={() => setMenuOpen(!menuOpen)}
-            >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-              </svg>
-            </Button>
-            {menuOpen && (
-              <div className="absolute right-0 mt-1 w-32 bg-gray-800 border border-gray-700 rounded-md shadow-lg z-10">
-                <button
-                  onClick={() => {
-                    setMenuOpen(false);
-                    setStartInEditMode(true);
-                    setDetailOpen(true);
-                  }}
-                  className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-700"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => {
-                    setMenuOpen(false);
-                    onDelete(prompt.id);
-                  }}
-                  className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-gray-700"
-                >
-                  Delete
-                </button>
-              </div>
-            )}
-            </div>
+            <CopyButton text={prompt.content} />
+            <Dropdown items={dropdownItems} />
           </div>
         </div>
         {categoryName && prompt.category_id && (

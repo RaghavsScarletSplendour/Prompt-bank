@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import Modal from "./Modal";
 import { Category } from "@/lib/types";
 import { CategoryColorDot } from "./ui/CategoryColorDot";
 import Button from "./ui/Button";
+import { useClickOutside } from "@/hooks/useClickOutside";
+import ErrorAlert from "./ui/ErrorAlert";
 
 interface CategoryManagerProps {
   categories: Category[];
@@ -23,16 +25,7 @@ export default function CategoryManager({
   const [isManageOpen, setIsManageOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsDropdownOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  useClickOutside(dropdownRef, () => setIsDropdownOpen(false));
 
   const getSelectedLabel = () => {
     if (selectedCategoryId === null) return "All";
@@ -229,11 +222,7 @@ function ManageCategoriesModal({
     <Modal isOpen={isOpen} onClose={onClose}>
       <h2 className="text-xl font-semibold text-gray-100 mb-4">Manage Categories</h2>
 
-      {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 text-sm">
-          {error}
-        </div>
-      )}
+      <ErrorAlert message={error} />
 
       {/* Create new category */}
       <form onSubmit={handleCreate} className="flex gap-2 mb-4">

@@ -5,6 +5,8 @@ import { PROMPT_LIMITS, validatePromptInput } from "@/lib/validations";
 import Modal from "./Modal";
 import { Category } from "@/lib/types";
 import Button from "./ui/Button";
+import { FormInput, FormTextarea, FormSelect } from "./ui/FormInput";
+import ErrorAlert from "./ui/ErrorAlert";
 
 interface PromptFormProps {
   isOpen: boolean;
@@ -24,7 +26,6 @@ export default function PromptForm({ isOpen, onClose, onSuccess, categories }: P
     e.preventDefault();
     setError("");
 
-    // Client-side validation using shared logic
     const validation = validatePromptInput({ name, content });
     if (!validation.success) {
       setError(validation.error);
@@ -55,7 +56,7 @@ export default function PromptForm({ isOpen, onClose, onSuccess, categories }: P
         const errorData = await res.json();
         setError(errorData.error || "Failed to save prompt");
       }
-    } catch (err) {
+    } catch {
       setError("Network error. Please try again.");
     } finally {
       setLoading(false);
@@ -65,57 +66,38 @@ export default function PromptForm({ isOpen, onClose, onSuccess, categories }: P
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <h2 className="text-xl font-semibold text-gray-100 mb-4">Add New Prompt</h2>
-      {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-          {error}
-        </div>
-      )}
+      <ErrorAlert message={error} />
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-1">
-            Name
-          </label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-            className="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="My awesome prompt"
-            maxLength={PROMPT_LIMITS.name.maxLength}
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-1">
-            Category
-          </label>
-          <select
-            value={categoryId}
-            onChange={(e) => setCategoryId(e.target.value)}
-            className="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="">No Category</option>
-            {categories.map((category) => (
-              <option key={category.id} value={category.id}>
-                {category.name}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-1">
-            Prompt
-          </label>
-          <textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            required
-            rows={5}
-            className="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Enter your prompt here..."
-            maxLength={PROMPT_LIMITS.content.maxLength}
-          />
-        </div>
+        <FormInput
+          label="Name"
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+          placeholder="My awesome prompt"
+          maxLength={PROMPT_LIMITS.name.maxLength}
+        />
+        <FormSelect
+          label="Category"
+          value={categoryId}
+          onChange={(e) => setCategoryId(e.target.value)}
+        >
+          <option value="">No Category</option>
+          {categories.map((category) => (
+            <option key={category.id} value={category.id}>
+              {category.name}
+            </option>
+          ))}
+        </FormSelect>
+        <FormTextarea
+          label="Prompt"
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          required
+          rows={5}
+          placeholder="Enter your prompt here..."
+          maxLength={PROMPT_LIMITS.content.maxLength}
+        />
         <div className="flex gap-3 justify-end">
           <Button type="button" variant="ghost" onClick={onClose}>
             Cancel
