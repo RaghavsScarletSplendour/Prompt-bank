@@ -42,8 +42,7 @@ export default function Sidebar() {
   return (
     <aside
       className={`${
-        isCollapsed ? "w-16" : "w-fit pr-6"
-
+        isCollapsed ? "w-16" : "w-60"
       } bg-black/70 backdrop-blur-sm min-h-screen p-4 transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] flex flex-col justify-between`}
     >
       <div>
@@ -70,8 +69,8 @@ export default function Sidebar() {
             <Link
               key={link.href}
               href={link.href}
-              className={`flex items-center gap-5 py-2 text-base font-medium transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] ${
-                isCollapsed ? "p-1.5 w-fit" : "px-3"
+              className={`flex items-center gap-6 py-2 text-base font-medium transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+                isCollapsed ? "p-2 w-fit" : "px-4"
               } ${
                 pathname === link.href
                   ? "text-white"
@@ -90,7 +89,7 @@ export default function Sidebar() {
           ))}
         </nav>
       </div>
-      <div className="px-3">
+      <div className="px-4">
         <UserMenu />
       </div>
     </aside>

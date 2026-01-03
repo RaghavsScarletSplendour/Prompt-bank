@@ -512,3 +512,38 @@ Replaced the flat black background with an interactive particles.js system acros
 - Component uses "use client" directive (requires browser APIs)
 - Full-screen mode with z-index: -1 (renders behind all content)
 - Configuration converted from particles.js format to tsparticles format
+
+---
+
+## 8pt Grid System Implementation (Jan 1, 2026)
+
+### Summary
+Applied the 8pt grid system to create visual rhythm in the UI. All key spacing values now use multiples of 8 (8, 16, 24, 32, 48, 64px).
+
+### Completed Tasks
+- [x] Update Sidebar.tsx - Fixed width 240px, 8pt-compliant spacing
+- [x] Update layout.tsx - Main container padding 64px
+
+### Files Modified (2)
+1. `components/Sidebar.tsx`
+   - Changed expanded width: `w-fit pr-6` → `w-60` (240px fixed)
+   - Changed nav gap: `gap-5` (20px) → `gap-6` (24px)
+   - Changed link padding: `px-3` (12px) → `px-4` (16px)
+   - Changed collapsed padding: `p-1.5` (6px) → `p-2` (8px)
+   - Changed bottom padding: `px-3` → `px-4`
+
+2. `app/layout.tsx`
+   - Changed main padding: `p-8` (32px) → `p-16` (64px)
+
+### 8pt Grid Values Applied
+| Element | Old Value | New Value |
+|---------|-----------|-----------|
+| Sidebar width | variable | 240px (w-60) |
+| Main padding | 32px | 64px |
+| Nav gap | 20px | 24px |
+| Link padding | 12px | 16px |
+| Collapsed padding | 6px | 8px |
+
+### Notes
+- Grid gap (24px) was already 8pt compliant - no change needed
+- Card padding (16px, 24px, 32px) was already compliant

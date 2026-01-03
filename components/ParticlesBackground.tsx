@@ -30,7 +30,7 @@ export default function ParticlesBackground() {
       fpsLimit: 120,
       particles: {
         number: {
-          value: 120,
+          value: 60,
           density: {
             enable: true,
             area: 1578.2983970406906,
@@ -57,7 +57,7 @@ export default function ParticlesBackground() {
         },
         move: {
           enable: true,
-          speed: 2,
+          speed: 0.8,
           direction: "none",
           random: false,
           straight: false,

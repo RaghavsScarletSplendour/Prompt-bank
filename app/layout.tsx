@@ -34,7 +34,7 @@ export default function RootLayout({
           <ParticlesBackground />
           <div className="flex min-h-screen">
             <Sidebar />
-            <main className="flex-1 p-8">
+            <main className="flex-1 p-16">
               {children}
             </main>
           </div>
