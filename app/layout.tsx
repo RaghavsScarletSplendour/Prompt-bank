@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
-import Sidebar from "@/components/Sidebar";
 import ParticlesBackground from "@/components/ParticlesBackground";
 import "./globals.css";
 
@@ -32,12 +31,7 @@ export default function RootLayout({
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
           <ParticlesBackground />
-          <div className="flex min-h-screen">
-            <Sidebar />
-            <main className="flex-1 p-16">
-              {children}
-            </main>
-          </div>
+          {children}
         </body>
       </html>
     </ClerkProvider>
