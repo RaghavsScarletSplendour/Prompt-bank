@@ -9,6 +9,7 @@ export default function SignInPage() {
       <ParticlesBackground particleCount={25} />
       <div className="min-h-screen flex items-center justify-center">
         <SignIn
+          forceRedirectUrl="/dashboard"
           appearance={{
             variables: {
               colorPrimary: "#0891b2",

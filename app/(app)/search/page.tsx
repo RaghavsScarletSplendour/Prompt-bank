@@ -26,6 +26,7 @@ export default function SearchPage() {
   const [loading, setLoading] = useState(false);
   const [searchMode, setSearchMode] = useState<"text" | "semantic">("text");
   const [searchResults, setSearchResults] = useState<Prompt[]>([]);
+  const [hasSearchedSemantic, setHasSearchedSemantic] = useState(false);
   const { toasts, showToast, dismissToast } = useToast();
 
   // Text search: filter locally
@@ -83,6 +84,7 @@ export default function SearchPage() {
         setSearchResults([]);
       } finally {
         setLoading(false);
+        setHasSearchedSemantic(true);
       }
     },
     [showToast]
@@ -112,6 +114,7 @@ export default function SearchPage() {
   const handleModeChange = (mode: "text" | "semantic") => {
     setSearchMode(mode);
     setSearchResults([]);
+    setHasSearchedSemantic(false);
   };
 
   return (
@@ -147,7 +150,7 @@ export default function SearchPage() {
             mode={searchMode}
             onSuggestionClick={(suggestion) => setSearchQuery(suggestion)}
           />
-        ) : displayPrompts.length === 0 ? (
+        ) : displayPrompts.length === 0 && (searchMode === "text" || hasSearchedSemantic) ? (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
