@@ -135,10 +135,12 @@ export default function BetaAccessPage() {
             <p className="mt-6 text-center text-sm text-gray-500">
               Don&apos;t have a code?{" "}
               <a
-                href="mailto:support@promptr.app"
+                href="https://x.com/raghavbajoria11"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-cyan-500 hover:text-cyan-400 transition-colors"
               >
-                Request access
+                DM me on X
               </a>
             </p>
           </div>

@@ -24,6 +24,16 @@ export function CTASection() {
         <Button variant="primary" size="lg" onClick={() => router.push("/sign-in")}>
           Sign Up Free
         </Button>
+        <p className="mt-6 text-gray-500 text-sm">
+          <a
+            href="https://x.com/raghavbajoria11"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-cyan-400 transition-colors"
+          >
+            Follow me on X @raghavbajoria11
+          </a>
+        </p>
       </motion.div>
     </section>
   );
