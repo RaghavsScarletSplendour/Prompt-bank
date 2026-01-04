@@ -1,4 +1,4 @@
-# Prompt Bank Implementation
+# Promptr Implementation
 
 ## Completed Tasks
 - [x] Initialize Next.js project with TypeScript + Tailwind
@@ -19,7 +19,7 @@
 ## Review
 
 ### Summary of Changes
-Built a simple Prompt Bank application with the following structure:
+Built a simple Promptr application with the following structure:
 
 **Authentication (Clerk)**
 - `middleware.ts` - Protects all routes except /sign-in

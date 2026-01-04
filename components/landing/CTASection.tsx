@@ -19,7 +19,7 @@ export function CTASection() {
           Start Building Your Prompt Library Today
         </h2>
         <p className="text-gray-400 mb-8">
-          Join Prompt Bank and never lose a great prompt again.
+          Join Promptr and never lose a great prompt again.
         </p>
         <Button variant="primary" size="lg" onClick={() => router.push("/sign-in")}>
           Sign Up Free

@@ -66,7 +66,7 @@ export default function Sidebar() {
               isCollapsed ? "opacity-0 w-0" : "opacity-100"
             }`}
           >
-            Prompt Bank
+            Promptr
           </h1>
         </div>
         <nav className="space-y-4">

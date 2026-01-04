@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Prompt Bank",
+  title: "Promptr",
   description: "Save and organize your prompts",
 };
 
