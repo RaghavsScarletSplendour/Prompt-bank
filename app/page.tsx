@@ -1,9 +1,13 @@
-export default function Home() {
+import { HeroSection } from "@/components/landing/HeroSection";
+import { FeaturesSection } from "@/components/landing/FeaturesSection";
+import { CTASection } from "@/components/landing/CTASection";
+
+export default function LandingPage() {
   return (
-    <div className="flex items-center justify-center h-full">
-      <h1 className="text-2xl font-semibold text-gray-300" style={{ fontSize: '45px' }}>
-        Welcome to Prompt Bank
-      </h1>
-    </div>
+    <main className="min-h-screen">
+      <HeroSection />
+      <FeaturesSection />
+      <CTASection />
+    </main>
   );
 }
