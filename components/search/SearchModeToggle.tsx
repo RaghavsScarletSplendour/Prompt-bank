@@ -15,8 +15,8 @@ export function SearchModeToggle({ mode, onChange }: SearchModeToggleProps) {
         className="absolute top-0.5 bottom-0.5 bg-cyan-600 rounded-full shadow-[0_0_10px_rgba(6,182,212,0.3)]"
         initial={false}
         animate={{
-          left: mode === "text" ? "2px" : "calc(50%)",
-          width: "calc(50% - 2px)",
+          left: mode === "text" ? "2px" : "calc(42%)",
+          width: mode === "text" ? "calc(40%)" : "calc(56%)",
         }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
       />
