@@ -42,8 +42,8 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     const isIcon = variant === "icon";
 
     const baseClasses = isIcon
-      ? variantClasses.icon
-      : `${variantClasses[variant]} ${sizeClasses[size]} rounded-lg transition-colors`;
+      ? `${variantClasses.icon} cursor-pointer`
+      : `${variantClasses[variant]} ${sizeClasses[size]} rounded-lg transition-colors cursor-pointer`;
 
     return (
       <button
